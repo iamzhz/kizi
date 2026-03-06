@@ -60,5 +60,6 @@ model::Object* sleep(model::Object* self, const model::List* args);
 model::Object* open(model::Object* self, const model::List* args);
 model::Object* assert_(model::Object* self, const model::List* args);
 model::Object* panic(model::Object* self, const model::List* args);
+model::Object* repeat(model::Object* self, const model::List* args);
 
 }

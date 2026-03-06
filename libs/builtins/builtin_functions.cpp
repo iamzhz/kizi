@@ -442,4 +442,20 @@ model::Object* panic(model::Object* self, const model::List* args) {
     exit(3);
 }
 
+model::Object* repeat(model::Object* self, const model::List* args) {
+    kiz::Vm::assert_argc(2, args);
+    auto lst = cast_to_list(args->val[0])->val;
+    auto repeat_count = cast_to_int(args->val[1])->val;
+
+    std::vector<model::Object*> new_vec = {};
+
+    for (dep::BigInt i = 0; i < repeat_count; i += 1) {
+        for (model::Object* obj: lst) {
+            new_vec.push_back(obj);
+        }
+    }
+
+    return new model::List(new_vec);
+}
+
 }

@@ -187,6 +187,7 @@ void Vm::entry_builtins() {
     builtin_insert("open", model::create_nfunc(builtin::open, "open"));
     builtin_insert("assert", model::create_nfunc(builtin::assert_, "assert"));
     builtin_insert("panic", model::create_nfunc(builtin::panic, "panic"));
+    builtin_insert("repeat", model::create_nfunc(builtin::repeat, "repeat"));
 
     builtin_insert("__BasedObject", model::based_based_obj);
     builtin_insert("Object", model::based_obj);
