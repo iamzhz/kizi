@@ -49,6 +49,7 @@ Built-in Functions:
     create(parent_obj=Object)
     breakpoint()
     help()
+    repeat(list, count)
     range(start, step, end)
     cmd(command)
     now()
