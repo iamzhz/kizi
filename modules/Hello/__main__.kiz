@@ -1,4 +1,4 @@
-fn __call__
+fn hello
     name = "kiz"
     for area in ["web", "os", "EMB"]
 	    print(f"Welcome developer from {area} to use {name}")
