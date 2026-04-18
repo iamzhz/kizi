@@ -182,7 +182,7 @@ public:
             }
         }
 
-        // 6. 构造尾数和指数（沿用原有逻辑）
+        // 构造尾数和指数（沿用原有逻辑）
         if (dot_pos == std::string::npos) {
             // 无小数点：整数
             mantissa_ = BigInt(int_part);
