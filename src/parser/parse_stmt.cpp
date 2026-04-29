@@ -9,6 +9,58 @@
 
 namespace kiz {
 
+void Parser::skip_type_unit() {
+    skip_token();
+    if (curr_token().type == TokenType::LBracket) {
+        skip_token("[");
+        while (curr_token().type != TokenType::RBracket) {
+            skip_type_unit();
+            if (curr_token().type == TokenType::Comma) {
+                skip_token(",");
+                skip_end_of_lines();
+            } else if (curr_token().type != TokenType::RBracket) {
+                err::error_reporter(file_path, curr_token().pos, "SyntaxError", "Unclosed argument list");
+            }
+        }
+        skip_token("]");
+    }
+}
+
+void Parser::skip_var_type_comment() {
+    if (curr_token().type == TokenType::Colon) {
+        skip_token(":");
+    } else {
+        return;
+    }
+    skip_type_unit();
+}
+
+
+void Parser::skip_fn_type_comment() {
+    DEBUG_OUTPUT("parsing type comment");
+    if (curr_token().type == TokenType::ThinArrow) {
+        skip_token("->");
+    } else {
+        return;
+    }
+    skip_type_unit();
+    if (curr_token().type == TokenType::Backslash) {
+        skip_token("\\");
+        skip_token("(");
+        while (curr_token().type != TokenType::RParen) {
+            skip_token();
+            if (curr_token().type == TokenType::Comma) {
+                skip_token(",");
+                skip_end_of_lines();
+            } else if (curr_token().type != TokenType::RParen) {
+                err::error_reporter(file_path, curr_token().pos, "SyntaxError", "Unclosed argument list");
+            }
+        }
+        skip_token(")");
+    }
+}
+
+
 // 需要end结尾的块
 std::unique_ptr<BlockStmt> Parser::parse_block(TokenType endswith) {
     DEBUG_OUTPUT("parsing block (with end)");
@@ -131,6 +183,7 @@ std::unique_ptr<Stmt> Parser::parse_stmt() {
                     break;
                 }
                 func_params.push_back(skip_token().text);
+                skip_var_type_comment();
                 // 处理参数间的逗号
                 if (curr_token().type == TokenType::Comma) {
                     skip_token(",");
@@ -140,6 +193,7 @@ std::unique_ptr<Stmt> Parser::parse_stmt() {
             }
             skip_token(")");  // 跳过右括号
         }
+        skip_fn_type_comment();
 
         // 解析函数体（无大括号，用end结尾）
         skip_start_of_block();  // 跳过参数后的换行
@@ -324,6 +378,19 @@ std::unique_ptr<Stmt> Parser::parse_stmt() {
     ) {
         DEBUG_OUTPUT("parsing assign");
         const auto name_tok = skip_token();
+        skip_token("=");
+        auto expr = parse_expression();
+        skip_end_of_stmt();
+        return std::make_unique<AssignStmt>(name_tok.pos, name_tok.text, std::move(expr));
+    }
+
+    if (curr_tok.type == TokenType::Identifier
+        and curr_tok_idx_ + 1 < tokens_.size()
+        and tokens_[curr_tok_idx_ + 1].type == TokenType::Colon
+    ) {
+        DEBUG_OUTPUT("parsing assign");
+        const auto name_tok = skip_token();
+        skip_var_type_comment();
         skip_token("=");
         auto expr = parse_expression();
         skip_end_of_stmt();

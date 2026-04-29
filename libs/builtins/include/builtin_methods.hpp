@@ -144,4 +144,7 @@ Object* native_function_str(Object* self, const List* args);
 // Module类型
 Object* module_str(Object* self, const List* args);
 
+// __Unpack类型
+Object* unpack_str(Object* self, const List* args);
+
 }

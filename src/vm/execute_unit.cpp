@@ -162,6 +162,12 @@ void Vm::execute_unit(const Instruction& instruction) {
         break;
     }
 
+    case Opcode::OP_UNPACK: {
+        auto obj = simple_get_and_pop_stack_top();
+        push_to_stack(new model::Unpack(obj));
+        break;
+    }
+
     case Opcode::MAKE_LIST: {
         make_list(instruction.opn_list[0]);
         break;

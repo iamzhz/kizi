@@ -168,6 +168,7 @@ void IRGenerator::gen_expr(Expr* expr) {
         Opcode opc;
         if (unary_expr->op == "-") opc = Opcode::OP_NEG;
         else if (unary_expr->op == "not") opc = Opcode::OP_NOT;
+        else if (unary_expr->op == "...") opc = Opcode::OP_UNPACK;
         else assert(false);
 
         code_chunks.back().code_list.emplace_back(
