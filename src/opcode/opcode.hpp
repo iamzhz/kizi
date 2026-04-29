@@ -16,7 +16,7 @@ enum class Opcode : uint8_t {
     OP_EQ, OP_GT, OP_LT,
     OP_GE, OP_LE, OP_NE,
     OP_NOT,
-    OP_IS, OP_IN,
+    OP_IS, OP_IN, OP_UNPACK,
 
     CALL, RET, CREATE_CLOSURE,
     GET_ATTR, SET_ATTR, CALL_METHOD,
@@ -57,6 +57,7 @@ inline std::string opcode_to_string(Opcode opc) {
 
     case Opcode::OP_IS:       return "OP_IS";
     case Opcode::OP_IN:       return "OP_IN";
+    case Opcode::OP_UNPACK:   return "OP_UNPACK";
 
     // 函数调用/返回
     case Opcode::CALL:        return "CALL";

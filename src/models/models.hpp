@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <atomic>
 #include <format>
 #include <fstream>
 #include <functional>
@@ -77,7 +76,7 @@ struct ExceptionTable {
 };
 
 class Object {
-    std::atomic<size_t> refc_ = 0;
+    size_t refc_ = 0;
     bool is_important = false; // 重要对象不参与make_refc/del_refc
 public:
     dep::HashMap<Object*> attrs;
@@ -86,7 +85,7 @@ public:
     enum class ObjectType {
         Object, Nil, Bool, Int, String, Decimal,
         List, Dictionary, CodeObject, Function,
-        NativeFunction, Module, Error
+        NativeFunction, Module, Error, Unpack
     };
 
     void mark_as_important() {
@@ -104,12 +103,13 @@ public:
     
     void make_ref() {
         if (is_important) return;
-        refc_.fetch_add(1, std::memory_order_relaxed);
+        refc_ += 1;
     }
     void del_ref() {
         if (is_important) return;
-        const size_t old_ref = refc_.fetch_sub(1, std::memory_order_acq_rel);
-        if (old_ref == 1) {
+        if (refc_ == 0) return;
+        refc_ -= 1;
+        if (refc_ == 0) {
             // std::cout << "deling object " << this->debug_string() << std::endl;
             delete this;
         }
@@ -150,6 +150,7 @@ inline auto based_module = new Object();
 inline auto based_code_object = new Object();
 inline auto based_file_handle = new Object();
 inline auto based_range = new Object();
+inline auto based_unpack = new Object();
 inline auto stop_iter_signal = new Object();
 
 class List;
@@ -460,6 +461,25 @@ public:
         return "fileHandle";
     }
 
+};
+
+class Unpack : public Object {
+public:
+    Object* val;
+
+    static constexpr ObjectType TYPE = ObjectType::Unpack;
+    [[nodiscard]] ObjectType get_type() const override { return TYPE; }
+
+    explicit Unpack(Object* val_) : val(val_) {
+        val->make_ref();
+        attrs_insert("__parent__", based_unpack);
+    }
+    [[nodiscard]] std::string debug_string() const override {
+        return "unpack";
+    }
+    ~Unpack() override {
+        val->del_ref();
+    }
 };
 
 inline auto unique_nil = new Nil();

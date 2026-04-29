@@ -23,6 +23,7 @@ void Vm::entry_builtins() {
     model::based_code_object->attrs_insert("__parent__", model::based_obj);
     model::based_file_handle->attrs_insert("__parent__", model::based_obj);
     model::based_range->attrs_insert("__parent__", model::based_obj);
+    model::based_unpack->attrs_insert("__parent__", model::based_obj);
 
     // Object 基类 方法
     model::based_obj->attrs_insert("__parent__", model::based_based_obj);
@@ -160,6 +161,8 @@ void Vm::entry_builtins() {
     model::based_function->attrs_insert("__str__", model::create_nfunc(model::function_str));
     // NativeFunction类型
     model::based_native_function->attrs_insert("__str__", model::create_nfunc(model::native_function_str));
+    // __Unpack类型
+    model::based_unpack->attrs_insert("__str__", model::create_nfunc(model::unpack_str));
 
     auto builtin_insert = [](const std::string& name,  model::Object* f) {
         f->make_ref();
@@ -203,6 +206,7 @@ void Vm::entry_builtins() {
     builtin_insert("Module", model::based_module);
     builtin_insert("FileHandle", model::based_file_handle);
     builtin_insert("Range", model::based_range);
+    builtin_insert("__Unpack", model::based_unpack);
     builtin_insert("__CodeObject", model::based_code_object);
     builtin_insert("__StopIterSignal__", model::stop_iter_signal);
 }

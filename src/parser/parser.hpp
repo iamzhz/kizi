@@ -32,6 +32,10 @@ public:
     std::unique_ptr<BlockStmt> parse(const std::vector<Token>& tokens);
 
 private:
+    void skip_type_unit();
+
+    void skip_fn_type_comment();
+    void skip_var_type_comment();
     // parse stmt
     std::unique_ptr<Stmt> parse_stmt();
     std::unique_ptr<BlockStmt> parse_block(TokenType endswith = TokenType::End);

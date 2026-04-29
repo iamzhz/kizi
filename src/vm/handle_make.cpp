@@ -35,7 +35,29 @@ void Vm::make_list(size_t len) {
 
     for (size_t i = 0; i < elem_count; ++i) {
         auto elem = simple_get_and_pop_stack_top(); // 弹出
-        elem_list.push_back(elem);
+        if (auto pkg = dynamic_cast<model::Unpack*>(elem)) {
+            std::vector<model::Object*> unpack_list;
+            while (true) {
+                pkg->val->make_ref();
+                call_method(pkg->val, "__next__", {});
+                pkg->val->del_ref();
+                auto res = simple_get_and_pop_stack_top();
+                if (res == model::stop_iter_signal) {
+                    break;
+                }
+                res->make_ref();
+                unpack_list.push_back(res);
+            }
+            for (auto u : std::ranges::reverse_view(unpack_list)) {
+                u->make_ref();
+                elem_list.push_back(model::copy_if_mutable(u));
+            }
+
+        } else {
+            elem->make_ref();
+            elem_list.push_back(model::copy_if_mutable(elem));
+        }
+
     }
     std::ranges::reverse(elem_list); // 恢复原序
 

@@ -146,4 +146,12 @@ Object* module_str(Object* self, const List* args) {
     );
 }
 
+// Unpack类型
+Object* unpack_str(Object* self, const List* args) {
+    auto self_unpack = dynamic_cast<model::Unpack*>(self);
+    return new model::String(
+        "__Unpack of " + kiz::Vm::obj_to_str(self_unpack->val)
+    );
+}
+
 }
