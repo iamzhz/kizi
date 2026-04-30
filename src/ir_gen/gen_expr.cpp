@@ -1,3 +1,11 @@
+/**
+ * @file gen_expr.cpp
+ * @brief 中间代码生成器（IR Generator）生成表达式部分核心实现
+ * 从AST生成IR
+ * @author azhz1107cat
+ * @date 2026-4-30
+ */
+
 #include "../opcode/opcode.hpp"
 #include "ir_gen.hpp"
 #include "../parser/ast.hpp"
